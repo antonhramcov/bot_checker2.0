@@ -10,6 +10,7 @@ from aiogram.types.message import ContentType
 from config import bot_token, payments_token
 from test_dates import database
 import texts
+from example_requests import check_mail
 
 # Инициализируем хранилище (создаем экземпляр класса MemoryStorage)
 storage: MemoryStorage = MemoryStorage()
@@ -86,13 +87,7 @@ async def process_start_command(message: Message, state: FSMContext):
 # Этот хэндлер будет ожидать от пользователя ввода почты
 @dp.message(StateFilter(FSMFillForm.fill_input_email))
 async def process_start_command(message: Message, state: FSMContext):
-    status = False
-    for i in range(len(database)):
-        if database[i]['email'] == str(message.text):
-            await message.answer(text=str(database[i]))
-            status = True
-    if status == False:
-        await message.answer(text='email {} в своей базе не нашел'.format(str(message.text)))
+    await message.answer(text=check_mail(message.text))
     await state.set_state(default_state)
 
 
