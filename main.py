@@ -21,9 +21,9 @@ dp: Dispatcher = Dispatcher(storage=storage)
 
 
 class FSMFillForm(StatesGroup):
-    fill_input_username = State()                 # Состояние ожидания ввода пользователем никнейма
+    #fill_input_username = State()                 # Состояние ожидания ввода пользователем никнейма
     fill_input_email = State()                    # Состояние ожидания ввода почты
-    fill_input_phone = State()                    # Состояние ожидания ввода телефона
+    #fill_input_phone = State()                    # Состояние ожидания ввода телефона
 
 
 # Создаем асинхронную функцию
