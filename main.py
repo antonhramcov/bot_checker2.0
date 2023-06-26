@@ -11,6 +11,7 @@ from config import bot_token, payments_token
 import texts
 from example_requests import check_mail
 import logging
+import json
 
 # Инициализируем хранилище (создаем экземпляр класса MemoryStorage)
 storage: MemoryStorage = MemoryStorage()
@@ -57,10 +58,23 @@ async def process_start_command(message: Message, state: FSMContext):
     await message.answer(text=texts.text3)
     await state.set_state(FSMFillForm.fill_input_email)
 
-# Этот хэндлер будет ожидать от пользователя ввода почты
+# Этот хэндлер будет ожидать от пользователя ввода почты и выводить результат поиска
 @dp.message(StateFilter(FSMFillForm.fill_input_email))
 async def process_start_command(message: Message, state: FSMContext):
-    await message.answer(text=check_mail(message.text))
+    #await message.answer(text=check_mail(message.text))
+    s = json.loads(check_mail(message.text))
+    out_mess = ''
+    if s['success']:
+        out_mess += f'Кол-во найденных записей: {s["found"]}\n'
+        for i in range(int(s["found"])):
+            out_mess += f'{i+1}. Ресурс: {s["sources"][i]["name"]}'
+            if s["sources"][i]["date"]:
+                out_mess += f', дата: {s["sources"][i]["date"]}'
+            out_mess +='.\n'
+        await message.answer(text=out_mess)
+        print(check_mail(message.text))
+    else:
+        await message.answer(text=f'Почта {message.text} в нашей базе данных отсутствует')
     await state.set_state(default_state)
     logging.info(f'Check email at user {message.from_user.username}')
 
