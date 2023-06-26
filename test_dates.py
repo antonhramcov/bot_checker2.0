@@ -1,2 +1,0 @@
-database = ({'username':'aleks2000TURBO', 'email':'aleks_from_UEFA@yandex.ru', 'phone':'8-991-123 33 21', 'hash_pass':'22d7fe8c185003c98f97e5d6ced420c7'},
-            {'username':'maks_pistoletov', 'email':'maksimka_online@mail.ru', 'phone':'+79501129964', 'hash_pass':'25d55ad283aa400af464c76d713c07ad'})

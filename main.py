@@ -8,9 +8,9 @@ from aiogram.types import (CallbackQuery, InlineKeyboardButton,
                            InlineKeyboardMarkup, Message, PhotoSize, BotCommand, LabeledPrice, PreCheckoutQuery )
 from aiogram.types.message import ContentType
 from config import bot_token, payments_token
-from test_dates import database
 import texts
 from example_requests import check_mail
+import logging
 
 # Инициализируем хранилище (создаем экземпляр класса MemoryStorage)
 storage: MemoryStorage = MemoryStorage()
@@ -33,24 +33,13 @@ async def set_main_menu(bot: Bot):
     main_menu_commands = [
         BotCommand(command='/check_email',
                    description='Проверить email'),
-        BotCommand(command='/check_phone',
-                   description='Проверить номер телефона'),
-        BotCommand(command='/check_username',
-                   description='Проверить никнейм'),
         BotCommand(command='/buy',
                    description='Купить доступ к базе'),
         ]
-
     await bot.set_my_commands(main_menu_commands)
 
 def check_email_filter(message: Message) -> bool:
     return message.text == '/check_email'
-
-def check_phone_filter(message: Message) -> bool:
-    return message.text == '/check_phone'
-
-def check_username_filter(message: Message) -> bool:
-    return message.text == '/check_username'
 
 def buy_filter(message: Message) -> bool:
     return message.text == '/buy'
@@ -59,24 +48,8 @@ def buy_filter(message: Message) -> bool:
 @dp.message(CommandStart(), StateFilter(default_state))
 async def process_start_command(message: Message):
     await message.answer(text=texts.text1)
+    logging.info(f'Start bot at user {message.from_user.username}')
 
-# Этот хэндлер будет срабатывать на команду /check_username
-@dp.message(check_username_filter, StateFilter(default_state))
-async def process_start_command(message: Message, state: FSMContext):
-    await message.answer(text=texts.text2)
-    await state.set_state(FSMFillForm.fill_input_username)
-
-# Этот хэндлер будет ожидать от пользователя ввода никнейма
-@dp.message(StateFilter(FSMFillForm.fill_input_username))
-async def process_start_command(message: Message, state: FSMContext):
-    status = False
-    for i in range(len(database)):
-        if database[i]['username'] == str(message.text):
-            await message.answer(text=str(database[i]))
-            status = True
-    if status == False:
-        await message.answer(text='username {} в своей базе не нашел'.format(str(message.text)))
-    await state.set_state(default_state)
 
 # Этот хэндлер будет срабатывать на команду /check_email
 @dp.message(check_email_filter, StateFilter(default_state))
@@ -89,26 +62,7 @@ async def process_start_command(message: Message, state: FSMContext):
 async def process_start_command(message: Message, state: FSMContext):
     await message.answer(text=check_mail(message.text))
     await state.set_state(default_state)
-
-
-# Этот хэндлер будет срабатывать на команду /check_phone
-@dp.message(check_phone_filter, StateFilter(default_state))
-async def process_start_command(message: Message, state: FSMContext):
-    await message.answer(text=texts.text4)
-    await state.set_state(FSMFillForm.fill_input_phone)
-
-
-# Этот хэндлер будет ожидать от пользователя ввода почты
-@dp.message(StateFilter(FSMFillForm.fill_input_phone))
-async def process_start_command(message: Message, state: FSMContext):
-    status = False
-    for i in range(len(database)):
-        if database[i]['phone'] == str(message.text):
-            await message.answer(text=str(database[i]))
-            status = True
-    if status == False:
-        await message.answer(text='номер {} в своей базе не нашел'.format(str(message.text)))
-    await state.set_state(default_state)
+    logging.info(f'Check email at user {message.from_user.username}')
 
 
 # Этот хэндлер будет срабатывать на команду /buy
@@ -130,6 +84,7 @@ async def process_start_command(message: Message):
         suggested_tip_amounts=[10000],
         start_parameter="one-month-subscription",
         payload="test-invoice-payload")
+    logging.info(f'billed for payment at user {message.from_user.username}')
 
 # Проверка возможности оплаты
 @dp.message(StateFilter(default_state))
@@ -141,8 +96,11 @@ async def pre_checkout_query(pre_checkout_query: PreCheckoutQuery):
 async def successful_payment(message: Message):
     msg = f'Спасибо за оплату {message.successful_payment.total_amount // 100} {message.successful_payment.currency}'
     await message.answer(msg)
+    logging.info(f'Get payment at user {message.from_user.username} - {message.successful_payment.total_amount // 100}')
 
 # Запускаем поллинг
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO, filename="bot.log")
+    logging.info(f'Bot started')
     dp.startup.register(set_main_menu)
     dp.run_polling(bot, skip_updates=False)

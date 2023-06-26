@@ -1,0 +1,12 @@
+INFO:root:Bot started
+INFO:aiogram.dispatcher:Start polling
+INFO:aiogram.dispatcher:Run polling for bot @data_ckeck_bot id=6014460310 - 'checkbot'
+INFO:root:Start bot at user ahramcov2022
+INFO:aiogram.event:Update id=573969264 is handled. Duration 188 ms by bot id=6014460310
+INFO:aiogram.event:Update id=573969265 is handled. Duration 93 ms by bot id=6014460310
+INFO:root:Check email at user ahramcov2022
+INFO:aiogram.event:Update id=573969266 is handled. Duration 469 ms by bot id=6014460310
+INFO:root:billed for payment at user ahramcov2022
+INFO:aiogram.event:Update id=573969267 is handled. Duration 125 ms by bot id=6014460310
+INFO:aiogram.dispatcher:Polling stopped
+INFO:aiogram.dispatcher:Polling stopped for bot @data_ckeck_bot id=6014460310 - 'checkbot'
