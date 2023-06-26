@@ -76,7 +76,7 @@ async def process_start_command(message: Message, state: FSMContext):
     else:
         await message.answer(text=f'Почта {message.text} в нашей базе данных отсутствует')
     await state.set_state(default_state)
-    logging.info(f'Check email at user {message.from_user.username}')
+    logging.info(f'Check {message.text} at user {message.from_user.username}')
 
 
 # Этот хэндлер будет срабатывать на команду /buy
