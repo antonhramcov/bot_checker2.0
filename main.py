@@ -100,7 +100,8 @@ async def successful_payment(message: Message):
 
 # Запускаем поллинг
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO, filename="bot.log")
+    logging.basicConfig(level=logging.INFO, filename="bot.log",
+                        format="%(asctime)s %(levelname)s %(message)s")
     logging.info(f'Bot started')
     dp.startup.register(set_main_menu)
     dp.run_polling(bot, skip_updates=False)
