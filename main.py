@@ -7,14 +7,17 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import (CallbackQuery, InlineKeyboardButton,
                            InlineKeyboardMarkup, Message, PhotoSize, BotCommand, LabeledPrice, PreCheckoutQuery )
 from aiogram.types.message import ContentType
-from config import bot_token, payments_token
+from config import bot_token, payments_token, admin1
 import texts
 from example_requests import check_mail
 import logging
 import json
+import sqlite3 as sql
 
 # Инициализируем хранилище (создаем экземпляр класса MemoryStorage)
 storage: MemoryStorage = MemoryStorage()
+
+admins = [admin1]
 
 # Создаем объекты бота и диспетчера
 bot: Bot = Bot(bot_token)
@@ -33,9 +36,13 @@ async def set_main_menu(bot: Bot):
     # Создаем список с командами и их описанием для кнопки menu
     main_menu_commands = [
         BotCommand(command='/check_email',
-                   description='Проверить email'),
+                   description=texts.text5_rus),
         BotCommand(command='/buy',
-                   description='Купить доступ к базе'),
+                   description=texts.text6_rus),
+        BotCommand(command='/balance',
+                   description=texts.text7_rus)
+        #BotCommand(command='/change_lang',
+        #           description=texts.text8_rus),
         ]
     await bot.set_my_commands(main_menu_commands)
 
@@ -45,23 +52,46 @@ def check_email_filter(message: Message) -> bool:
 def buy_filter(message: Message) -> bool:
     return message.text == '/buy'
 
+def balance_filter(message: Message) -> bool:
+    return message.text == '/balance'
+
+
 # Этот хэндлер будет срабатывать на команду /start
 @dp.message(CommandStart(), StateFilter(default_state))
 async def process_start_command(message: Message):
-    await message.answer(text=texts.text1)
+    await message.answer(text=texts.text1_rus)
+    cursor.execute(f"SELECT id FROM users_list WHERE id = {message.from_user.id}")
+    data = cursor.fetchone()
+    if data is None:
+        s1 = f"INSERT INTO users_list (id, username, counts, lang) VALUES(?, ?, ?, ?);"
+        cursor.execute(s1, [message.from_user.id, message.from_user.username, 0 ,'rus'])
+        connect.commit()
+        logging.info(f'Add values in users_list by {message.from_user.username}')
     logging.info(f'Start bot at user {message.from_user.username}')
 
+# Этот хэндлер будет срабатывать на команду /balance
+@dp.message(balance_filter, StateFilter(default_state))
+async def process_start_command(message: Message):
+    s1 = cursor.execute(f"SELECT counts FROM users_list WHERE id={message.from_user.id}")
+    await message.answer(text=f"{texts.text9_rus}{s1.fetchone()[0]}")
+    logging.info(f"User {message.from_user.username} requested balance")
 
 # Этот хэндлер будет срабатывать на команду /check_email
 @dp.message(check_email_filter, StateFilter(default_state))
 async def process_start_command(message: Message, state: FSMContext):
-    await message.answer(text=texts.text3)
-    await state.set_state(FSMFillForm.fill_input_email)
+    balance = cursor.execute(f"SELECT counts FROM users_list WHERE id={message.from_user.id}").fetchone()[0]
+    if balance > 0:
+        await message.answer(text=texts.text3_rus)
+        balance -= 1
+        cursor.execute(f"UPDATE users_list SET counts={balance} WHERE id={message.from_user.id}")
+        connect.commit()
+        await state.set_state(FSMFillForm.fill_input_email)
+    else:
+        await message.answer(text=texts.text10_rus)
 
 # Этот хэндлер будет ожидать от пользователя ввода почты и выводить результат поиска
 @dp.message(StateFilter(FSMFillForm.fill_input_email))
 async def process_start_command(message: Message, state: FSMContext):
-    #await message.answer(text=check_mail(message.text))
     s = json.loads(check_mail(message.text))
     out_mess = ''
     if s['success']:
@@ -72,7 +102,6 @@ async def process_start_command(message: Message, state: FSMContext):
                 out_mess += f', дата: {s["sources"][i]["date"]}'
             out_mess +='.\n'
         await message.answer(text=out_mess)
-        print(check_mail(message.text))
     else:
         await message.answer(text=f'Почта {message.text} в нашей базе данных отсутствует')
     await state.set_state(default_state)
@@ -112,9 +141,14 @@ async def successful_payment(message: Message):
     await message.answer(msg)
     logging.info(f'Get payment at user {message.from_user.username} - {message.successful_payment.total_amount // 100}')
 
+
+
+
 # Запускаем поллинг
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO, filename="bot.log",
+    connect = sql.connect('users.db')
+    cursor = connect.cursor()
+    logging.basicConfig(level=logging.INFO, filename="bot.log", filemode='w',
                         format="%(asctime)s %(levelname)s %(message)s")
     logging.info(f'Bot started')
     dp.startup.register(set_main_menu)
