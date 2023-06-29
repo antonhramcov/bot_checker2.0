@@ -1,12 +1,11 @@
-from aiogram import Bot, Dispatcher, F, types
-from aiogram.filters import Command, CommandStart, StateFilter, Text
+from aiogram import Bot, Dispatcher
+from aiogram.filters import CommandStart, StateFilter, Text
 from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.types import (CallbackQuery, InlineKeyboardButton,
-                           InlineKeyboardMarkup, Message, PhotoSize, BotCommand, LabeledPrice, PreCheckoutQuery )
-from aiogram.types.message import ContentType
+from aiogram.types import (KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove,
+                           Message, LabeledPrice, PreCheckoutQuery)
 from config import bot_token, payments_token, admin1
 import texts
 from example_requests import check_mail
@@ -25,41 +24,45 @@ dp: Dispatcher = Dispatcher(storage=storage)
 
 
 class FSMFillForm(StatesGroup):
-    #fill_input_username = State()                 # Состояние ожидания ввода пользователем никнейма
-    fill_input_email = State()                    # Состояние ожидания ввода почты
-    #fill_input_phone = State()                    # Состояние ожидания ввода телефона
+    fill_input_email = State()                 # Переход в проверку почты
+    fill_payments_30rub = State()
+    fill_payments_100rub = State()
+    fill_payments_200rub = State()
+    fill_payments_500rub = State()
+    check_payments_30rub = State()
+    check_payments_100rub = State()
+    check_payments_200rub = State()
+    check_payments_500rub = State()
 
 
-# Создаем асинхронную функцию
-async def set_main_menu(bot: Bot):
+# Создаем объекты кнопок
+button_1: KeyboardButton = KeyboardButton(text='Проверить email')
+button_2: KeyboardButton = KeyboardButton(text='Баланс')
+button_3: KeyboardButton = KeyboardButton(text='О боте')
+button_4: KeyboardButton = KeyboardButton(text='Пополнить баланс')
+button_5: KeyboardButton = KeyboardButton(text='Купить 1 поисковой запрос')
+button_6: KeyboardButton = KeyboardButton(text='Купить 5 поисковых запросов')
+button_7: KeyboardButton = KeyboardButton(text='Купить 30 поисковых запросов')
+button_8: KeyboardButton = KeyboardButton(text='Купить 100 поисковых запросов')
+button_9: KeyboardButton = KeyboardButton(text='В меню')
 
-    # Создаем список с командами и их описанием для кнопки menu
-    main_menu_commands = [
-        BotCommand(command='/check_email',
-                   description=texts.text5_rus),
-        BotCommand(command='/buy',
-                   description=texts.text6_rus),
-        BotCommand(command='/balance',
-                   description=texts.text7_rus)
-        #BotCommand(command='/change_lang',
-        #           description=texts.text8_rus),
-        ]
-    await bot.set_my_commands(main_menu_commands)
+# Создаем объект клавиатуры, добавляя в него кнопки
+keyboard1: ReplyKeyboardMarkup = ReplyKeyboardMarkup(
+                                    keyboard=[[button_1], [button_2, button_3]],
+                                    resize_keyboard=True)
 
-def check_email_filter(message: Message) -> bool:
-    return message.text == '/check_email'
+keyboard2: ReplyKeyboardMarkup = ReplyKeyboardMarkup(
+                                    keyboard=[[button_5], [button_6], [button_7], [button_8], [button_9]],
+                                    resize_keyboard=True)
 
-def buy_filter(message: Message) -> bool:
-    return message.text == '/buy'
-
-def balance_filter(message: Message) -> bool:
-    return message.text == '/balance'
+keyboard3: ReplyKeyboardMarkup = ReplyKeyboardMarkup(
+                                    keyboard=[[button_9]],
+                                    resize_keyboard=True)
 
 
 # Этот хэндлер будет срабатывать на команду /start
 @dp.message(CommandStart(), StateFilter(default_state))
 async def process_start_command(message: Message):
-    await message.answer(text=texts.text1_rus)
     cursor.execute(f"SELECT id FROM users_list WHERE id = {message.from_user.id}")
     data = cursor.fetchone()
     if data is None:
@@ -68,30 +71,42 @@ async def process_start_command(message: Message):
         connect.commit()
         logging.info(f'Add values in users_list by {message.from_user.username}')
     logging.info(f'Start bot at user {message.from_user.username}')
+    await message.answer(text=texts.text1_rus, reply_markup=keyboard1)
+    await bot.send_message(chat_id=admins[0], text=f'Пользователь {message.from_user.username} запустил бота')
 
-# Этот хэндлер будет срабатывать на команду /balance
-@dp.message(balance_filter, StateFilter(default_state))
-async def process_start_command(message: Message):
+# Этот хэндлер будет срабатывать на кнопку О боте
+@dp.message(Text(text='О боте'))
+async def process_about_command(message: Message, state: FSMContext):
+    await message.answer(text=texts.text12_rus, reply_markup=keyboard1)
+
+# Этот хэндлер будет срабатывать на кнопку В меню
+@dp.message(Text(text='В меню'))
+async def process_menu_command(message: Message, state: FSMContext):
+    await state.set_state(default_state)
+    await message.answer(text='Вы вышли в меню', reply_markup=keyboard1)
+
+# Этот хэндлер будет срабатывать на кнопку Баланс
+@dp.message(Text(text='Баланс'), StateFilter(default_state))
+async def process_balance_command(message: Message):
     s1 = cursor.execute(f"SELECT counts FROM users_list WHERE id={message.from_user.id}")
-    await message.answer(text=f"{texts.text9_rus}{s1.fetchone()[0]}")
+    await message.answer(text=f"{texts.text9_rus}{s1.fetchone()[0]}", reply_markup=ReplyKeyboardRemove())
+    await message.answer(text=texts.text11_rus, reply_markup=keyboard2)
     logging.info(f"User {message.from_user.username} requested balance")
 
-# Этот хэндлер будет срабатывать на команду /check_email
-@dp.message(check_email_filter, StateFilter(default_state))
-async def process_start_command(message: Message, state: FSMContext):
+# Этот хэндлер будет срабатывать на кнопку Проверить email
+@dp.message(Text(text='Проверить email'), StateFilter(default_state))
+async def process_check_command(message: Message, state: FSMContext):
     balance = cursor.execute(f"SELECT counts FROM users_list WHERE id={message.from_user.id}").fetchone()[0]
     if balance > 0:
-        await message.answer(text=texts.text3_rus)
-        balance -= 1
-        cursor.execute(f"UPDATE users_list SET counts={balance} WHERE id={message.from_user.id}")
-        connect.commit()
+        await message.answer(text=texts.text3_rus, reply_markup=keyboard3)
         await state.set_state(FSMFillForm.fill_input_email)
     else:
         await message.answer(text=texts.text10_rus)
 
 # Этот хэндлер будет ожидать от пользователя ввода почты и выводить результат поиска
 @dp.message(StateFilter(FSMFillForm.fill_input_email))
-async def process_start_command(message: Message, state: FSMContext):
+async def process_input_command(message: Message, state: FSMContext):
+    balance = cursor.execute(f"SELECT counts FROM users_list WHERE id={message.from_user.id}").fetchone()[0]
     s = json.loads(check_mail(message.text))
     out_mess = ''
     if s['success']:
@@ -102,54 +117,184 @@ async def process_start_command(message: Message, state: FSMContext):
                 out_mess += f', дата: {s["sources"][i]["date"]}'
             out_mess +='.\n'
         await message.answer(text=out_mess)
+        balance -= 1
+        cursor.execute(f"UPDATE users_list SET counts={balance} WHERE id={message.from_user.id}")
+        connect.commit()
     else:
         await message.answer(text=f'Почта {message.text} в нашей базе данных отсутствует')
+        await message.answer(text=texts.text14_rus)
     await state.set_state(default_state)
     logging.info(f'Check {message.text} at user {message.from_user.username}')
 
 
-# Этот хэндлер будет срабатывать на команду /buy
-@dp.message(buy_filter, StateFilter(default_state))
-async def process_start_command(message: Message):
+# Этот хэндлер будет срабатывать на кнопку Купить 1 поисковой запрос
+@dp.message(Text(text='Купить 1 поисковой запрос'), StateFilter(default_state))
+async def process_buy1_command(message: Message, state: FSMContext):
     await bot.send_invoice(
         chat_id=message.chat.id,
         title="Купить доступ к базе",
-        description="10 поисковых запросов к базе данных",
+        description="1 поисковой запрос к базе данных",
         provider_token=payments_token,
         currency="rub",
-        photo_url="https://github.com/antonhramcov/images_for_bots/blob/master/10.jpg?raw=true",
+        photo_url="https://github.com/antonhramcov/images_for_bots/blob/master/1.jpg?raw=true",
         photo_width=416,
         photo_height=234,
         photo_size=416,
         is_flexible=False,
-        prices=[LabeledPrice(label='10 запросов', amount=200*100)],
+        prices=[LabeledPrice(label='1 запрос', amount=30*100)],
         max_tip_amount=50000,
-        suggested_tip_amounts=[10000],
+        suggested_tip_amounts=[1000],
         start_parameter="one-month-subscription",
         payload="test-invoice-payload")
-    logging.info(f'billed for payment at user {message.from_user.username}')
+    await message.answer(text=texts.text13_rus, reply_markup=keyboard3)
+    await state.set_state(FSMFillForm.fill_payments_30rub)
+
+# Этот хэндлер будет срабатывать на кнопку Купить 5 поисковых запросов
+@dp.message(Text(text='Купить 5 поисковых запросов'), StateFilter(default_state))
+async def process_buy5_command(message: Message, state: FSMContext):
+    await bot.send_invoice(
+        chat_id=message.chat.id,
+        title="Купить доступ к базе",
+        description="5 поисковых запросов к базе данных",
+        provider_token=payments_token,
+        currency="rub",
+        photo_url="https://github.com/antonhramcov/images_for_bots/blob/master/5.jpg?raw=true",
+        photo_width=416,
+        photo_height=234,
+        photo_size=416,
+        is_flexible=False,
+        prices=[LabeledPrice(label='1 запрос', amount=100*100)],
+        max_tip_amount=50000,
+        suggested_tip_amounts=[2500],
+        start_parameter="one-month-subscription",
+        payload="test-invoice-payload")
+    await message.answer(text=texts.text13_rus, reply_markup=keyboard3)
+    await state.set_state(FSMFillForm.fill_payments_100rub)
+
+# Этот хэндлер будет срабатывать на кнопку Купить 30 поисковых запросов
+@dp.message(Text(text='Купить 30 поисковых запросов'), StateFilter(default_state))
+async def process_buy30_command(message: Message, state: FSMContext):
+    await bot.send_invoice(
+        chat_id=message.chat.id,
+        title="Купить доступ к базе",
+        description="30 поисковых запросов к базе данных",
+        provider_token=payments_token,
+        currency="rub",
+        photo_url="https://github.com/antonhramcov/images_for_bots/blob/master/30.jpg?raw=true",
+        photo_width=416,
+        photo_height=234,
+        photo_size=416,
+        is_flexible=False,
+        prices=[LabeledPrice(label='1 запрос', amount=200*100)],
+        max_tip_amount=50000,
+        suggested_tip_amounts=[5000],
+        start_parameter="one-month-subscription",
+        payload="test-invoice-payload")
+    await message.answer(text=texts.text13_rus, reply_markup=keyboard3)
+    await state.set_state(FSMFillForm.fill_payments_200rub)
+
+# Этот хэндлер будет срабатывать на команду Купить 100 поисковых запросов
+@dp.message(Text(text='Купить 100 поисковых запросов'), StateFilter(default_state))
+async def process_buy100_command(message: Message, state: FSMContext):
+    await bot.send_invoice(
+        chat_id=message.chat.id,
+        title="Купить доступ к базе",
+        description="100 поисковых запросов к базе данных",
+        provider_token=payments_token,
+        currency="rub",
+        photo_url="https://github.com/antonhramcov/images_for_bots/blob/master/100.jpg?raw=true",
+        photo_width=416,
+        photo_height=234,
+        photo_size=416,
+        is_flexible=False,
+        prices=[LabeledPrice(label='100 запросов', amount=500*100)],
+        max_tip_amount=50000,
+        suggested_tip_amounts=[5000],
+        start_parameter="one-month-subscription",
+        payload="test-invoice-payload")
+    await message.answer(text=texts.text13_rus, reply_markup=keyboard3)
+    await state.set_state(FSMFillForm.fill_payments_500rub)
 
 # Проверка возможности оплаты
-@dp.message(StateFilter(default_state))
-async def pre_checkout_query(pre_checkout_query: PreCheckoutQuery):
+@dp.message(StateFilter(FSMFillForm.fill_payments_30rub))
+async def pre_checkout1_query(pre_checkout_query: PreCheckoutQuery, state: FSMContext):
     await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
+    await state.set_state(FSMFillForm.check_payments_30rub)
+
+
+@dp.message(StateFilter(FSMFillForm.fill_payments_100rub))
+async def pre_checkout5_query(pre_checkout_query: PreCheckoutQuery, state: FSMContext, message: Message):
+    await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
+    await state.set_state(FSMFillForm.check_payments_100rub)
+
+@dp.message(StateFilter(FSMFillForm.fill_payments_200rub))
+async def pre_checkout30_query(pre_checkout_query: PreCheckoutQuery, state: FSMContext):
+    await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
+    await state.set_state(FSMFillForm.check_payments_200rub)
+
+@dp.message(StateFilter(FSMFillForm.fill_payments_500rub))
+async def pre_checkout100_query(pre_checkout_query: PreCheckoutQuery, state: FSMContext):
+    await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
+    await state.set_state(FSMFillForm.check_payments_500rub)
 
 # Проведение оплаты
-@dp.message(StateFilter(default_state))
-async def successful_payment(message: Message):
+@dp.message(StateFilter(FSMFillForm.check_payments_30rub))
+async def successful1_payment(message: Message, state: FSMContext):
     msg = f'Спасибо за оплату {message.successful_payment.total_amount // 100} {message.successful_payment.currency}'
     await message.answer(msg)
+    balance = cursor.execute(f"SELECT counts FROM users_list WHERE id={message.from_user.id}").fetchone()[0]
+    balance += 1
+    cursor.execute(f"UPDATE users_list SET counts={balance} WHERE id={message.from_user.id}")
+    connect.commit()
     logging.info(f'Get payment at user {message.from_user.username} - {message.successful_payment.total_amount // 100}')
+    for admin in admins:
+        await bot.send_message(chat_id=admin, text=f"Пользователь {message.from_user.username} оплатил {message.successful_payment.total_amount // 100} руб.")
+    await state.set_state(default_state)
 
+@dp.message(StateFilter(FSMFillForm.check_payments_100rub))
+async def successful5_payment(message: Message, state: FSMContext):
+    msg = f'Спасибо за оплату {message.successful_payment.total_amount // 100} {message.successful_payment.currency}'
+    await message.answer(msg)
+    balance = cursor.execute(f"SELECT counts FROM users_list WHERE id={message.from_user.id}").fetchone()[0]
+    balance += 5
+    cursor.execute(f"UPDATE users_list SET counts={balance} WHERE id={message.from_user.id}")
+    connect.commit()
+    logging.info(f'Get payment at user {message.from_user.username} - {message.successful_payment.total_amount // 100}')
+    for admin in admins:
+        await bot.send_message(chat_id=admin, text=f"Пользователь {message.from_user.username} оплатил {message.successful_payment.total_amount // 100} руб.")
+    await state.set_state(default_state)
 
+@dp.message(StateFilter(FSMFillForm.check_payments_200rub))
+async def successful30_payment(message: Message, state: FSMContext):
+    msg = f'Спасибо за оплату {message.successful_payment.total_amount // 100} {message.successful_payment.currency}'
+    await message.answer(msg)
+    balance = cursor.execute(f"SELECT counts FROM users_list WHERE id={message.from_user.id}").fetchone()[0]
+    balance += 30
+    cursor.execute(f"UPDATE users_list SET counts={balance} WHERE id={message.from_user.id}")
+    connect.commit()
+    logging.info(f'Get payment at user {message.from_user.username} - {message.successful_payment.total_amount // 100}')
+    for admin in admins:
+        await bot.send_message(chat_id=admin, text=f"Пользователь {message.from_user.username} оплатил {message.successful_payment.total_amount // 100} руб.")
+    await state.set_state(default_state)
 
+@dp.message(StateFilter(FSMFillForm.check_payments_500rub))
+async def successful100_payment(message: Message, state: FSMContext):
+    msg = f'Спасибо за оплату {message.successful_payment.total_amount // 100} {message.successful_payment.currency}'
+    await message.answer(msg)
+    balance = cursor.execute(f"SELECT counts FROM users_list WHERE id={message.from_user.id}").fetchone()[0]
+    balance += 100
+    cursor.execute(f"UPDATE users_list SET counts={balance} WHERE id={message.from_user.id}")
+    connect.commit()
+    logging.info(f'Get payment at user {message.from_user.username} - {message.successful_payment.total_amount // 100}')
+    for admin in admins:
+        await bot.send_message(chat_id=admin, text=f"Пользователь {message.from_user.username} оплатил {message.successful_payment.total_amount // 100} руб.")
+    await state.set_state(default_state)
 
-# Запускаем поллинг
+# Запускаем пуллинг
 if __name__ == '__main__':
     connect = sql.connect('users.db')
     cursor = connect.cursor()
     logging.basicConfig(level=logging.INFO, filename="bot.log", filemode='w',
                         format="%(asctime)s %(levelname)s %(message)s")
     logging.info(f'Bot started')
-    dp.startup.register(set_main_menu)
     dp.run_polling(bot, skip_updates=False)

@@ -1,10 +1,10 @@
-2023-06-28 16:35:08,385 INFO Bot started
-2023-06-28 16:35:08,549 INFO Start polling
-2023-06-28 16:35:08,597 INFO Run polling for bot @data_ckeck_bot id=6014460310 - 'checkbot'
-2023-06-28 16:35:10,949 INFO Update id=573969389 is handled. Duration 219 ms by bot id=6014460310
-2023-06-28 16:35:57,663 INFO Check sosh.popova@mail.ru at user ahramcov2022
-2023-06-28 16:35:57,663 INFO Update id=573969390 is handled. Duration 1516 ms by bot id=6014460310
-2023-06-28 16:36:03,954 INFO User ahramcov2022 requested balance
-2023-06-28 16:36:03,954 INFO Update id=573969391 is handled. Duration 125 ms by bot id=6014460310
-2023-06-28 16:36:19,776 INFO Polling stopped
-2023-06-28 16:36:19,777 INFO Polling stopped for bot @data_ckeck_bot id=6014460310 - 'checkbot'
+2023-06-29 18:38:57,928 INFO Bot started
+2023-06-29 18:38:57,929 INFO Start polling
+2023-06-29 18:38:58,074 INFO Run polling for bot @pass_finder_bot id=6192954815 - 'Password finder'
+2023-06-29 18:39:05,799 INFO Update id=827702370 is handled. Duration 250 ms by bot id=6192954815
+2023-06-29 18:39:06,955 INFO User ahramcov2022 requested balance
+2023-06-29 18:39:06,955 INFO Update id=827702371 is handled. Duration 280 ms by bot id=6192954815
+2023-06-29 18:39:12,069 INFO Update id=827702372 is handled. Duration 266 ms by bot id=6192954815
+2023-06-29 18:39:34,241 INFO Update id=827702373 is not handled. Duration 0 ms by bot id=6192954815
+2023-06-29 18:41:56,331 INFO Polling stopped
+2023-06-29 18:41:56,332 INFO Polling stopped for bot @pass_finder_bot id=6192954815 - 'Password finder'
