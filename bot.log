@@ -1,10 +1,12 @@
-2023-06-29 18:38:57,928 INFO Bot started
-2023-06-29 18:38:57,929 INFO Start polling
-2023-06-29 18:38:58,074 INFO Run polling for bot @pass_finder_bot id=6192954815 - 'Password finder'
-2023-06-29 18:39:05,799 INFO Update id=827702370 is handled. Duration 250 ms by bot id=6192954815
-2023-06-29 18:39:06,955 INFO User ahramcov2022 requested balance
-2023-06-29 18:39:06,955 INFO Update id=827702371 is handled. Duration 280 ms by bot id=6192954815
-2023-06-29 18:39:12,069 INFO Update id=827702372 is handled. Duration 266 ms by bot id=6192954815
-2023-06-29 18:39:34,241 INFO Update id=827702373 is not handled. Duration 0 ms by bot id=6192954815
-2023-06-29 18:41:56,331 INFO Polling stopped
-2023-06-29 18:41:56,332 INFO Polling stopped for bot @pass_finder_bot id=6192954815 - 'Password finder'
+2023-07-02 18:25:02,371 INFO Bot started
+2023-07-02 18:25:02,371 INFO Start polling
+2023-07-02 18:25:02,519 INFO Run polling for bot @pass_finder_bot id=6192954815 - 'Password Finder'
+2023-07-02 18:25:06,009 INFO Update id=827702556 is handled. Duration 171 ms by bot id=6192954815
+2023-07-02 18:25:07,034 INFO Update id=827702557 is handled. Duration 94 ms by bot id=6192954815
+2023-07-02 18:25:16,752 INFO Check ivanov at user ahramcov2022
+2023-07-02 18:25:16,753 INFO Update id=827702558 is handled. Duration 905 ms by bot id=6192954815
+2023-07-02 18:25:37,897 INFO Update id=827702559 is handled. Duration 233 ms by bot id=6192954815
+2023-07-02 18:25:38,752 INFO Update id=827702560 is handled. Duration 109 ms by bot id=6192954815
+2023-07-02 18:25:45,290 INFO Check 89960512474 at user ahramcov2022
+2023-07-02 18:25:45,290 INFO Update id=827702561 is handled. Duration 516 ms by bot id=6192954815
+2023-07-02 18:33:35,801 INFO Polling stopped

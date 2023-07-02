@@ -1,15 +1,16 @@
-from . import base
-from . import fields
+from __future__ import annotations
+
+from .base import MutableTelegramObject
 
 
-class BotCommand(base.TelegramObject):
+class BotCommand(MutableTelegramObject):
     """
     This object represents a bot command.
 
-    https://core.telegram.org/bots/api#botcommand
+    Source: https://core.telegram.org/bots/api#botcommand
     """
-    command: base.String = fields.Field()
-    description: base.String = fields.Field()
 
-    def __init__(self, command: base.String, description: base.String):
-        super(BotCommand, self).__init__(command=command, description=description)
+    command: str
+    """Text of the command; 1-32 characters. Can contain only lowercase English letters, digits and underscores."""
+    description: str
+    """Description of the command; 1-256 characters."""

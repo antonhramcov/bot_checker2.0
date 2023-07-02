@@ -1,18 +1,29 @@
-from . import base
-from . import fields
-from . import mixins
-from .photo_size import PhotoSize
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
+
+from .base import TelegramObject
+
+if TYPE_CHECKING:
+    from .photo_size import PhotoSize
 
 
-class VideoNote(base.TelegramObject, mixins.Downloadable):
+class VideoNote(TelegramObject):
     """
-    This object represents a video message (available in Telegram apps as of v.4.0).
+    This object represents a `video message <https://telegram.org/blog/video-messages-and-telescope>`_ (available in Telegram apps as of `v.4.0 <https://telegram.org/blog/video-messages-and-telescope>`_).
 
-    https://core.telegram.org/bots/api#videonote
+    Source: https://core.telegram.org/bots/api#videonote
     """
-    file_id: base.String = fields.Field()
-    file_unique_id: base.String = fields.Field()
-    length: base.Integer = fields.Field()
-    duration: base.Integer = fields.Field()
-    thumb: PhotoSize = fields.Field(base=PhotoSize)
-    file_size: base.Integer = fields.Field()
+
+    file_id: str
+    """Identifier for this file, which can be used to download or reuse the file"""
+    file_unique_id: str
+    """Unique identifier for this file, which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file."""
+    length: int
+    """Video width and height (diameter of the video message) as defined by sender"""
+    duration: int
+    """Duration of the video in seconds as defined by sender"""
+    thumb: Optional[PhotoSize] = None
+    """*Optional*. Video thumbnail"""
+    file_size: Optional[int] = None
+    """*Optional*. File size in bytes"""

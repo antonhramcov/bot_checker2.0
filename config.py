@@ -1,4 +1,5 @@
 from environs import Env
+from aiogram import types
 
 env = Env()
 env.read_env()

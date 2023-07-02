@@ -1,20 +1,25 @@
-from . import base, fields
+from __future__ import annotations
+
+from .base import TelegramObject
 
 
-class Dice(base.TelegramObject):
+class Dice(TelegramObject):
     """
     This object represents an animated emoji that displays a random value.
-    
-    https://core.telegram.org/bots/api#dice
+
+    Source: https://core.telegram.org/bots/api#dice
     """
-    emoji: base.String = fields.Field()
-    value: base.Integer = fields.Field()
+
+    emoji: str
+    """Emoji on which the dice throw animation is based"""
+    value: int
+    """Value of the dice, 1-6 for '🎲', '🎯' and '🎳' base emoji, 1-5 for '🏀' and '⚽' base emoji, 1-64 for '🎰' base emoji"""
 
 
 class DiceEmoji:
-    DICE = '🎲'
-    DART = '🎯'
-    BASKETBALL = '🏀'
-    FOOTBALL = '⚽'
-    SLOT_MACHINE = '🎰'
-    BOWLING = '🎳'
+    DICE = "🎲"
+    DART = "🎯"
+    BASKETBALL = "🏀"
+    FOOTBALL = "⚽"
+    SLOT_MACHINE = "🎰"
+    BOWLING = "🎳"

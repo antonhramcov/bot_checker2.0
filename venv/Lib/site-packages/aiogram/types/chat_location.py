@@ -1,16 +1,21 @@
-from . import base
-from . import fields
-from .location import Location
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from .base import TelegramObject
+
+if TYPE_CHECKING:
+    from .location import Location
 
 
-class ChatLocation(base.TelegramObject):
+class ChatLocation(TelegramObject):
     """
     Represents a location to which a chat is connected.
 
-    https://core.telegram.org/bots/api#chatlocation
+    Source: https://core.telegram.org/bots/api#chatlocation
     """
-    location: Location = fields.Field()
-    address: base.String = fields.Field()
 
-    def __init__(self, location: Location, address: base.String):
-        super().__init__(location=location, address=address)
+    location: Location
+    """The location to which the supergroup is connected. Can't be a live location."""
+    address: str
+    """Location address; 1-64 characters, as defined by the chat owner"""

@@ -1,15 +1,21 @@
-import typing
+from __future__ import annotations
 
-from . import base
-from . import fields
-from .photo_size import PhotoSize
+from typing import TYPE_CHECKING, List
+
+from .base import TelegramObject
+
+if TYPE_CHECKING:
+    from .photo_size import PhotoSize
 
 
-class UserProfilePhotos(base.TelegramObject):
+class UserProfilePhotos(TelegramObject):
     """
     This object represent a user's profile pictures.
 
-    https://core.telegram.org/bots/api#userprofilephotos
+    Source: https://core.telegram.org/bots/api#userprofilephotos
     """
-    total_count: base.Integer = fields.Field()
-    photos: typing.List[typing.List[PhotoSize]] = fields.ListOfLists(base=PhotoSize)
+
+    total_count: int
+    """Total number of profile pictures the target user has"""
+    photos: List[List[PhotoSize]]
+    """Requested profile pictures (in up to 4 sizes each)"""

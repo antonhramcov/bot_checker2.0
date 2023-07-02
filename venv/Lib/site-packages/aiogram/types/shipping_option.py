@@ -1,32 +1,23 @@
-import typing
+from __future__ import annotations
 
-from . import base
-from . import fields
-from .labeled_price import LabeledPrice
+from typing import TYPE_CHECKING, List
+
+from .base import TelegramObject
+
+if TYPE_CHECKING:
+    from .labeled_price import LabeledPrice
 
 
-class ShippingOption(base.TelegramObject):
+class ShippingOption(TelegramObject):
     """
     This object represents one shipping option.
 
-    https://core.telegram.org/bots/api#shippingoption
+    Source: https://core.telegram.org/bots/api#shippingoption
     """
-    id: base.String = fields.Field()
-    title: base.String = fields.Field()
-    prices: typing.List[LabeledPrice] = fields.ListField(base=LabeledPrice)
 
-    def __init__(self, id: base.String, title: base.String, prices: typing.List[LabeledPrice] = None):
-        if prices is None:
-            prices = []
-
-        super(ShippingOption, self).__init__(id=id, title=title, prices=prices)
-
-    def add(self, price: LabeledPrice):
-        """
-        Add price
-
-        :param price:
-        :return:
-        """
-        self.prices.append(price)
-        return self
+    id: str
+    """Shipping option identifier"""
+    title: str
+    """Option title"""
+    prices: List[LabeledPrice]
+    """List of price portions"""

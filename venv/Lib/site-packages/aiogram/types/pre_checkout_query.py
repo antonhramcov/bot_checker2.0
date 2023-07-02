@@ -1,34 +1,49 @@
-from . import base
-from . import fields
-from .order_info import OrderInfo
-from .user import User
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
+
+from pydantic import Field
+
+from .base import TelegramObject
+
+if TYPE_CHECKING:
+    from ..methods import AnswerPreCheckoutQuery
+    from .order_info import OrderInfo
+    from .user import User
 
 
-class PreCheckoutQuery(base.TelegramObject):
+class PreCheckoutQuery(TelegramObject):
     """
     This object contains information about an incoming pre-checkout query.
-    Your bot can offer users HTML5 games to play solo or to compete against
-    each other in groups and one-on-one chats.
 
-    Create games via @BotFather using the /newgame command.
-
-    Please note that this kind of power requires responsibility:
-    you will need to accept the terms for each game that your bots will be offering.
-
-    https://core.telegram.org/bots/api#precheckoutquery
+    Source: https://core.telegram.org/bots/api#precheckoutquery
     """
-    id: base.String = fields.Field()
-    from_user: User = fields.Field(alias='from', base=User)
-    currency: base.String = fields.Field()
-    total_amount: base.Integer = fields.Field()
-    invoice_payload: base.String = fields.Field()
-    shipping_option_id: base.String = fields.Field()
-    order_info: OrderInfo = fields.Field(base=OrderInfo)
 
-    def __hash__(self):
-        return self.id
+    id: str
+    """Unique query identifier"""
+    from_user: User = Field(..., alias="from")
+    """User who sent the query"""
+    currency: str
+    """Three-letter ISO 4217 `currency <https://core.telegram.org/bots/payments#supported-currencies>`_ code"""
+    total_amount: int
+    """Total price in the *smallest units* of the currency (integer, **not** float/double). For example, for a price of :code:`US$ 1.45` pass :code:`amount = 145`. See the *exp* parameter in `currencies.json <https://core.telegram.org/bots/payments/currencies.json>`_, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies)."""
+    invoice_payload: str
+    """Bot specified invoice payload"""
+    shipping_option_id: Optional[str] = None
+    """*Optional*. Identifier of the shipping option chosen by the user"""
+    order_info: Optional[OrderInfo] = None
+    """*Optional*. Order information provided by the user"""
 
-    def __eq__(self, other):
-        if isinstance(other, type(self)):
-            return other.id == self.id
-        return self.id == other
+    def answer(self, ok: bool, error_message: Optional[str] = None) -> AnswerPreCheckoutQuery:
+        """
+        :param ok:
+        :param error_message:
+        :return:
+        """
+        from ..methods import AnswerPreCheckoutQuery
+
+        return AnswerPreCheckoutQuery(
+            pre_checkout_query_id=self.id,
+            ok=ok,
+            error_message=error_message,
+        )

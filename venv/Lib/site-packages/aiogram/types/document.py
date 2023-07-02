@@ -1,50 +1,29 @@
-from . import base
-from . import fields
-from . import mixins
-from .photo_size import PhotoSize
-from ..utils import helper
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
+
+from .base import TelegramObject
+
+if TYPE_CHECKING:
+    from .photo_size import PhotoSize
 
 
-class Document(base.TelegramObject, mixins.Downloadable):
+class Document(TelegramObject):
     """
-    This object represents a general file (as opposed to photos, voice messages and audio files).
+    This object represents a general file (as opposed to `photos <https://core.telegram.org/bots/api#photosize>`_, `voice messages <https://core.telegram.org/bots/api#voice>`_ and `audio files <https://core.telegram.org/bots/api#audio>`_).
 
-    https://core.telegram.org/bots/api#document
-    """
-    file_id: base.String = fields.Field()
-    file_unique_id: base.String = fields.Field()
-    thumb: PhotoSize = fields.Field(base=PhotoSize)
-    file_name: base.String = fields.Field()
-    mime_type: base.String = fields.Field()
-    file_size: base.Integer = fields.Field()
-
-    @property
-    def mime_base(self) -> str:
-        base_type, _, _ = self.mime_type.partition('/')
-        return base_type
-
-    @property
-    def mime_subtype(self) -> str:
-        _, _, subtype = self.mime_type.partition('/')
-        return subtype
-
-
-class MimeBase(helper.Helper):
-    """
-    List of mime base types registered in IANA
-
-    https://www.iana.org/assignments/media-types/media-types.xhtml
+    Source: https://core.telegram.org/bots/api#document
     """
 
-    mode = helper.HelperMode.lowercase
-
-    APPLICATION = helper.Item()  # application
-    AUDIO = helper.Item()  # audio
-    EXAMPLE = helper.Item()  # example
-    FONT = helper.Item()  # font
-    IMAGE = helper.Item()  # image
-    MESSAGE = helper.Item()  # message
-    MODEL = helper.Item()  # model
-    MULTIPART = helper.Item()  # multipart
-    TEXT = helper.Item()  # text
-    VIDEO = helper.Item()  # video
+    file_id: str
+    """Identifier for this file, which can be used to download or reuse the file"""
+    file_unique_id: str
+    """Unique identifier for this file, which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file."""
+    thumb: Optional[PhotoSize] = None
+    """*Optional*. Document thumbnail as defined by sender"""
+    file_name: Optional[str] = None
+    """*Optional*. Original filename as defined by sender"""
+    mime_type: Optional[str] = None
+    """*Optional*. MIME type of the file as defined by sender"""
+    file_size: Optional[int] = None
+    """*Optional*. File size in bytes. It can be bigger than 2^31 and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit integer or double-precision float type are safe for storing this value."""

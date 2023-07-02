@@ -1,16 +1,24 @@
-from . import base
-from . import fields
+from __future__ import annotations
+
+from .base import TelegramObject
 
 
-class ShippingAddress(base.TelegramObject):
+class ShippingAddress(TelegramObject):
     """
     This object represents a shipping address.
 
-    https://core.telegram.org/bots/api#shippingaddress
+    Source: https://core.telegram.org/bots/api#shippingaddress
     """
-    country_code: base.String = fields.Field()
-    state: base.String = fields.Field()
-    city: base.String = fields.Field()
-    street_line1: base.String = fields.Field()
-    street_line2: base.String = fields.Field()
-    post_code: base.String = fields.Field()
+
+    country_code: str
+    """Two-letter ISO 3166-1 alpha-2 country code"""
+    state: str
+    """State, if applicable"""
+    city: str
+    """City"""
+    street_line1: str
+    """First line for the address"""
+    street_line2: str
+    """Second line for the address"""
+    post_code: str
+    """Address post code"""

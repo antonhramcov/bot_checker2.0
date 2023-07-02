@@ -1,10 +1,14 @@
-from . import base, fields
+from __future__ import annotations
+
+from .base import TelegramObject
 
 
-class MessageId(base.TelegramObject):
+class MessageId(TelegramObject):
     """
     This object represents a unique message identifier.
 
-    https://core.telegram.org/bots/api#messageid
+    Source: https://core.telegram.org/bots/api#messageid
     """
-    message_id: base.String = fields.Field()
+
+    message_id: int
+    """Unique message identifier"""

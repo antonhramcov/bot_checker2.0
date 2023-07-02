@@ -1,25 +1,24 @@
-from . import base
-from . import fields
+from __future__ import annotations
+
+from typing import Optional
+
+from .base import TelegramObject
 
 
-class Contact(base.TelegramObject):
+class Contact(TelegramObject):
     """
     This object represents a phone contact.
 
-    https://core.telegram.org/bots/api#contact
+    Source: https://core.telegram.org/bots/api#contact
     """
-    phone_number: base.String = fields.Field()
-    first_name: base.String = fields.Field()
-    last_name: base.String = fields.Field()
-    user_id: base.Integer = fields.Field()
-    vcard: base.String = fields.Field()
 
-    @property
-    def full_name(self):
-        name = self.first_name
-        if self.last_name is not None:
-            name += ' ' + self.last_name
-        return name
-
-    def __hash__(self):
-        return hash(self.phone_number)
+    phone_number: str
+    """Contact's phone number"""
+    first_name: str
+    """Contact's first name"""
+    last_name: Optional[str] = None
+    """*Optional*. Contact's last name"""
+    user_id: Optional[int] = None
+    """*Optional*. Contact's user identifier in Telegram. This number may have more than 32 significant bits and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a 64-bit integer or double-precision float type are safe for storing this identifier."""
+    vcard: Optional[str] = None
+    """*Optional*. Additional data about the contact in the form of a `vCard <https://en.wikipedia.org/wiki/VCard>`_"""

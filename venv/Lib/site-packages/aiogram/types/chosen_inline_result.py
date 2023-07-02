@@ -1,22 +1,31 @@
-from . import base
-from . import fields
-from .location import Location
-from .user import User
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
+
+from pydantic import Field
+
+from .base import TelegramObject
+
+if TYPE_CHECKING:
+    from .location import Location
+    from .user import User
 
 
-class ChosenInlineResult(base.TelegramObject):
+class ChosenInlineResult(TelegramObject):
     """
-    Represents a result of an inline query that was chosen by the user and sent to their chat partner.
+    Represents a `result <https://core.telegram.org/bots/api#inlinequeryresult>`_ of an inline query that was chosen by the user and sent to their chat partner.
+    **Note:** It is necessary to enable `inline feedback <https://core.telegram.org/bots/inline#collecting-feedback>`_ via `@BotFather <https://t.me/botfather>`_ in order to receive these objects in updates.
 
-    Note: It is necessary to enable inline feedback via @Botfather in order to receive these objects in updates.
-    Your bot can accept payments from Telegram users.
-    Please see the introduction to payments for more details on the process and how to set up payments for your bot.
-    Please note that users will need Telegram v.4.0 or higher to use payments (released on May 18, 2017).
-
-    https://core.telegram.org/bots/api#choseninlineresult
+    Source: https://core.telegram.org/bots/api#choseninlineresult
     """
-    result_id: base.String = fields.Field()
-    from_user: User = fields.Field(alias='from', base=User)
-    location: Location = fields.Field(base=Location)
-    inline_message_id: base.String = fields.Field()
-    query: base.String = fields.Field()
+
+    result_id: str
+    """The unique identifier for the result that was chosen"""
+    from_user: User = Field(..., alias="from")
+    """The user that chose the result"""
+    query: str
+    """The query that was used to obtain the result"""
+    location: Optional[Location] = None
+    """*Optional*. Sender location, only for bots that require user location"""
+    inline_message_id: Optional[str] = None
+    """*Optional*. Identifier of the sent inline message. Available only if there is an `inline keyboard <https://core.telegram.org/bots/api#inlinekeyboardmarkup>`_ attached to the message. Will be also received in `callback queries <https://core.telegram.org/bots/api#callbackquery>`_ and can be used to `edit <https://core.telegram.org/bots/api#updating-messages>`_ the message."""

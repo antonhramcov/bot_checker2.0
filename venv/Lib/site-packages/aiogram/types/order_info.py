@@ -1,15 +1,25 @@
-from . import base
-from . import fields
-from .shipping_address import ShippingAddress
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
+
+from .base import TelegramObject
+
+if TYPE_CHECKING:
+    from .shipping_address import ShippingAddress
 
 
-class OrderInfo(base.TelegramObject):
+class OrderInfo(TelegramObject):
     """
     This object represents information about an order.
 
-    https://core.telegram.org/bots/api#orderinfo
+    Source: https://core.telegram.org/bots/api#orderinfo
     """
-    name: base.String = fields.Field()
-    phone_number: base.String = fields.Field()
-    email: base.String = fields.Field()
-    shipping_address: ShippingAddress = fields.Field(base=ShippingAddress)
+
+    name: Optional[str] = None
+    """*Optional*. User name"""
+    phone_number: Optional[str] = None
+    """*Optional*. User's phone number"""
+    email: Optional[str] = None
+    """*Optional*. User email"""
+    shipping_address: Optional[ShippingAddress] = None
+    """*Optional*. User shipping address"""

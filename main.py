@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import (KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove,
-                           Message, LabeledPrice, PreCheckoutQuery)
+                           Message, LabeledPrice, PreCheckoutQuery, successful_payment)
 from config import bot_token, payments_token, admin1
 import texts
 from example_requests import check_mail
@@ -141,9 +141,7 @@ async def process_buy1_command(message: Message, state: FSMContext):
         photo_height=234,
         photo_size=416,
         is_flexible=False,
-        prices=[LabeledPrice(label='1 запрос', amount=30*100)],
-        max_tip_amount=50000,
-        suggested_tip_amounts=[1000],
+        prices=[LabeledPrice(label='1 запрос', amount=60*100)],
         start_parameter="one-month-subscription",
         payload="test-invoice-payload")
     await message.answer(text=texts.text13_rus, reply_markup=keyboard3)
@@ -216,23 +214,23 @@ async def process_buy100_command(message: Message, state: FSMContext):
     await state.set_state(FSMFillForm.fill_payments_500rub)
 
 # Проверка возможности оплаты
-@dp.message(StateFilter(FSMFillForm.fill_payments_30rub))
+@dp.pre_checkout_query(StateFilter(FSMFillForm.fill_payments_30rub))
 async def pre_checkout1_query(pre_checkout_query: PreCheckoutQuery, state: FSMContext):
     await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
     await state.set_state(FSMFillForm.check_payments_30rub)
 
 
-@dp.message(StateFilter(FSMFillForm.fill_payments_100rub))
+@dp.pre_checkout_query(StateFilter(FSMFillForm.fill_payments_100rub))
 async def pre_checkout5_query(pre_checkout_query: PreCheckoutQuery, state: FSMContext, message: Message):
     await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
     await state.set_state(FSMFillForm.check_payments_100rub)
 
-@dp.message(StateFilter(FSMFillForm.fill_payments_200rub))
+@dp.pre_checkout_query(StateFilter(FSMFillForm.fill_payments_200rub))
 async def pre_checkout30_query(pre_checkout_query: PreCheckoutQuery, state: FSMContext):
     await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
     await state.set_state(FSMFillForm.check_payments_200rub)
 
-@dp.message(StateFilter(FSMFillForm.fill_payments_500rub))
+@dp.pre_checkout_query(FSMFillForm.fill_payments_500rub)
 async def pre_checkout100_query(pre_checkout_query: PreCheckoutQuery, state: FSMContext):
     await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
     await state.set_state(FSMFillForm.check_payments_500rub)
@@ -240,6 +238,7 @@ async def pre_checkout100_query(pre_checkout_query: PreCheckoutQuery, state: FSM
 # Проведение оплаты
 @dp.message(StateFilter(FSMFillForm.check_payments_30rub))
 async def successful1_payment(message: Message, state: FSMContext):
+    print('ШАГ 3')
     msg = f'Спасибо за оплату {message.successful_payment.total_amount // 100} {message.successful_payment.currency}'
     await message.answer(msg)
     balance = cursor.execute(f"SELECT counts FROM users_list WHERE id={message.from_user.id}").fetchone()[0]
@@ -253,6 +252,7 @@ async def successful1_payment(message: Message, state: FSMContext):
 
 @dp.message(StateFilter(FSMFillForm.check_payments_100rub))
 async def successful5_payment(message: Message, state: FSMContext):
+    print('ШАГ 3')
     msg = f'Спасибо за оплату {message.successful_payment.total_amount // 100} {message.successful_payment.currency}'
     await message.answer(msg)
     balance = cursor.execute(f"SELECT counts FROM users_list WHERE id={message.from_user.id}").fetchone()[0]

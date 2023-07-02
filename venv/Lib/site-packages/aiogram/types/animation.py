@@ -1,24 +1,35 @@
-from . import base
-from . import fields
-from . import mixins
-from .photo_size import PhotoSize
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
+
+from .base import TelegramObject
+
+if TYPE_CHECKING:
+    from .photo_size import PhotoSize
 
 
-class Animation(base.TelegramObject, mixins.Downloadable):
+class Animation(TelegramObject):
     """
-    You can provide an animation for your game so that it looks stylish in chats
-    (check out Lumberjack for an example).
-    This object represents an animation file to be displayed in the message containing a game.
+    This object represents an animation file (GIF or H.264/MPEG-4 AVC video without sound).
 
-    https://core.telegram.org/bots/api#animation
+    Source: https://core.telegram.org/bots/api#animation
     """
 
-    file_id: base.String = fields.Field()
-    file_unique_id: base.String = fields.Field()
-    width: base.Integer = fields.Field()
-    height: base.Integer = fields.Field()
-    duration: base.Integer = fields.Field()
-    thumb: PhotoSize = fields.Field(base=PhotoSize)
-    file_name: base.String = fields.Field()
-    mime_type: base.String = fields.Field()
-    file_size: base.Integer = fields.Field()
+    file_id: str
+    """Identifier for this file, which can be used to download or reuse the file"""
+    file_unique_id: str
+    """Unique identifier for this file, which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file."""
+    width: int
+    """Video width as defined by sender"""
+    height: int
+    """Video height as defined by sender"""
+    duration: int
+    """Duration of the video in seconds as defined by sender"""
+    thumb: Optional[PhotoSize] = None
+    """*Optional*. Animation thumbnail as defined by sender"""
+    file_name: Optional[str] = None
+    """*Optional*. Original animation filename as defined by sender"""
+    mime_type: Optional[str] = None
+    """*Optional*. MIME type of the file as defined by sender"""
+    file_size: Optional[int] = None
+    """*Optional*. File size in bytes. It can be bigger than 2^31 and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit integer or double-precision float type are safe for storing this value."""

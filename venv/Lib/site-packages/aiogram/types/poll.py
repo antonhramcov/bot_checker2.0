@@ -1,83 +1,45 @@
+from __future__ import annotations
+
 import datetime
-import typing
+from typing import TYPE_CHECKING, List, Optional, Union
 
-from . import base, fields
-from .message_entity import MessageEntity
-from .user import User
-from ..utils import helper
-from ..utils.text_decorations import html_decoration, markdown_decoration
+from .base import TelegramObject
 
-
-class PollOption(base.TelegramObject):
-    """
-    This object contains information about one answer option in a poll.
-
-    https://core.telegram.org/bots/api#polloption
-    """
-
-    text: base.String = fields.Field()
-    voter_count: base.Integer = fields.Field()
+if TYPE_CHECKING:
+    from .message_entity import MessageEntity
+    from .poll_option import PollOption
 
 
-class PollAnswer(base.TelegramObject):
-    """
-    This object represents an answer of a user in a non-anonymous poll.
-    
-    https://core.telegram.org/bots/api#pollanswer
-    """
-
-    poll_id: base.String = fields.Field()
-    user: User = fields.Field(base=User)
-    option_ids: typing.List[base.Integer] = fields.ListField()
-
-
-class Poll(base.TelegramObject):
+class Poll(TelegramObject):
     """
     This object contains information about a poll.
-    
-    https://core.telegram.org/bots/api#poll
+
+    Source: https://core.telegram.org/bots/api#poll
     """
 
-    id: base.String = fields.Field()
-    question: base.String = fields.Field()
-    options: typing.List[PollOption] = fields.ListField(base=PollOption)
-    total_voter_count: base.Integer = fields.Field()
-    is_closed: base.Boolean = fields.Field()
-    is_anonymous: base.Boolean = fields.Field()
-    type: base.String = fields.Field()
-    allows_multiple_answers: base.Boolean = fields.Field()
-    correct_option_id: base.Integer = fields.Field()
-    explanation: base.String = fields.Field()
-    explanation_entities: base.String = fields.ListField(base=MessageEntity)
-    open_period: base.Integer = fields.Field()
-    close_date: datetime.datetime = fields.DateTimeField()
-
-    def parse_entities(self, as_html=True):
-        text_decorator = html_decoration if as_html else markdown_decoration
-
-        return text_decorator.unparse(self.explanation or '', self.explanation_entities or [])
-
-    @property
-    def md_explanation(self) -> str:
-        """
-        Explanation formatted as markdown.
-
-        :return: str
-        """
-        return self.parse_entities(False)
-
-    @property
-    def html_explanation(self) -> str:
-        """
-        Explanation formatted as HTML
-
-        :return: str
-        """
-        return self.parse_entities()
-
-
-class PollType(helper.Helper):
-    mode = helper.HelperMode.snake_case
-
-    REGULAR = helper.Item()
-    QUIZ = helper.Item()
+    id: str
+    """Unique poll identifier"""
+    question: str
+    """Poll question, 1-300 characters"""
+    options: List[PollOption]
+    """List of poll options"""
+    total_voter_count: int
+    """Total number of users that voted in the poll"""
+    is_closed: bool
+    """:code:`True`, if the poll is closed"""
+    is_anonymous: bool
+    """:code:`True`, if the poll is anonymous"""
+    type: str
+    """Poll type, currently can be 'regular' or 'quiz'"""
+    allows_multiple_answers: bool
+    """:code:`True`, if the poll allows multiple answers"""
+    correct_option_id: Optional[int] = None
+    """*Optional*. 0-based identifier of the correct answer option. Available only for polls in the quiz mode, which are closed, or was sent (not forwarded) by the bot or to the private chat with the bot."""
+    explanation: Optional[str] = None
+    """*Optional*. Text that is shown when a user chooses an incorrect answer or taps on the lamp icon in a quiz-style poll, 0-200 characters"""
+    explanation_entities: Optional[List[MessageEntity]] = None
+    """*Optional*. Special entities like usernames, URLs, bot commands, etc. that appear in the *explanation*"""
+    open_period: Optional[int] = None
+    """*Optional*. Amount of time in seconds the poll will be active after creation"""
+    close_date: Optional[Union[datetime.datetime, datetime.timedelta, int]] = None
+    """*Optional*. Point in time (Unix timestamp) when the poll will be automatically closed"""

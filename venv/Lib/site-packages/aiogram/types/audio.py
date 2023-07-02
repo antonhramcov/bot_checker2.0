@@ -1,21 +1,35 @@
-from . import base
-from . import fields
-from . import mixins
-from .photo_size import PhotoSize
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
+
+from .base import TelegramObject
+
+if TYPE_CHECKING:
+    from .photo_size import PhotoSize
 
 
-class Audio(base.TelegramObject, mixins.Downloadable):
+class Audio(TelegramObject):
     """
     This object represents an audio file to be treated as music by the Telegram clients.
 
-    https://core.telegram.org/bots/api#audio
+    Source: https://core.telegram.org/bots/api#audio
     """
-    file_id: base.String = fields.Field()
-    file_unique_id: base.String = fields.Field()
-    duration: base.Integer = fields.Field()
-    performer: base.String = fields.Field()
-    title: base.String = fields.Field()
-    file_name: base.String = fields.Field()
-    mime_type: base.String = fields.Field()
-    file_size: base.Integer = fields.Field()
-    thumb: PhotoSize = fields.Field(base=PhotoSize)
+
+    file_id: str
+    """Identifier for this file, which can be used to download or reuse the file"""
+    file_unique_id: str
+    """Unique identifier for this file, which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file."""
+    duration: int
+    """Duration of the audio in seconds as defined by sender"""
+    performer: Optional[str] = None
+    """*Optional*. Performer of the audio as defined by sender or by audio tags"""
+    title: Optional[str] = None
+    """*Optional*. Title of the audio as defined by sender or by audio tags"""
+    file_name: Optional[str] = None
+    """*Optional*. Original filename as defined by sender"""
+    mime_type: Optional[str] = None
+    """*Optional*. MIME type of the file as defined by sender"""
+    file_size: Optional[int] = None
+    """*Optional*. File size in bytes. It can be bigger than 2^31 and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit integer or double-precision float type are safe for storing this value."""
+    thumb: Optional[PhotoSize] = None
+    """*Optional*. Thumbnail of the album cover to which the music file belongs"""
