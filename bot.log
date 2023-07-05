@@ -1,12 +1,72 @@
-2023-07-02 18:25:02,371 INFO Bot started
-2023-07-02 18:25:02,371 INFO Start polling
-2023-07-02 18:25:02,519 INFO Run polling for bot @pass_finder_bot id=6192954815 - 'Password Finder'
-2023-07-02 18:25:06,009 INFO Update id=827702556 is handled. Duration 171 ms by bot id=6192954815
-2023-07-02 18:25:07,034 INFO Update id=827702557 is handled. Duration 94 ms by bot id=6192954815
-2023-07-02 18:25:16,752 INFO Check ivanov at user ahramcov2022
-2023-07-02 18:25:16,753 INFO Update id=827702558 is handled. Duration 905 ms by bot id=6192954815
-2023-07-02 18:25:37,897 INFO Update id=827702559 is handled. Duration 233 ms by bot id=6192954815
-2023-07-02 18:25:38,752 INFO Update id=827702560 is handled. Duration 109 ms by bot id=6192954815
-2023-07-02 18:25:45,290 INFO Check 89960512474 at user ahramcov2022
-2023-07-02 18:25:45,290 INFO Update id=827702561 is handled. Duration 516 ms by bot id=6192954815
-2023-07-02 18:33:35,801 INFO Polling stopped
+2023-07-02 19:07:44,954 INFO Bot started
+2023-07-02 19:07:44,955 INFO Start polling
+2023-07-02 19:07:45,103 INFO Run polling for bot @pass_finder_bot id=6192954815 - 'Password Finder'
+2023-07-02 19:07:49,668 INFO Update id=827702568 is not handled. Duration 0 ms by bot id=6192954815
+2023-07-02 19:07:49,668 ERROR Cause exception while process update id=827702568 by bot id=6192954815
+TypeError: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "C:\Users\理蝾韁AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\dispatcher.py", line 293, in _process_update
+    response = await self.feed_update(bot, update, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\理蝾韁AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\dispatcher.py", line 142, in feed_update
+    response = await self.update.wrap_outer_middleware(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\理蝾韁AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\middlewares\error.py", line 25, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\理蝾韁AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\middlewares\user_context.py", line 23, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\理蝾韁AppData\Local\Programs\Python\Python311\Lib\contextlib.py", line 222, in __aexit__
+    await self.gen.athrow(typ, value, traceback)
+  File "C:\Users\理蝾韁AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\fsm\storage\memory.py", line 52, in lock
+    yield
+  File "C:\Users\理蝾韁AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\fsm\middleware.py", line 34, in __call__
+    return await handler(event, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\理蝾韁AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\event\telegram.py", line 111, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\理蝾韁AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\event\handler.py", line 42, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\理蝾韁AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\dispatcher.py", line 260, in _listen_update
+    return await self.propagate_event(update_type=update_type, event=event, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\理蝾韁AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\router.py", line 115, in propagate_event
+    return await observer.wrap_outer_middleware(_wrapped, event=event, data=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\理蝾韁AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\router.py", line 111, in _wrapped
+    return await self._propagate_event(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\理蝾韁AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\router.py", line 124, in _propagate_event
+    response = await observer.trigger(event, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\理蝾韁AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\event\telegram.py", line 111, in trigger
+    return await wrapped_inner(event, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\理蝾韁AppData\Local\Programs\Python\Python311\Lib\site-packages\aiogram\dispatcher\event\handler.py", line 42, in call
+    return await wrapped()
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\理蝾韁PycharmProjects\bot_checker2.0\bot.py", line 92, in process_balance_command
+    await message.answer(text=f"{texts.text9_rus}{s1.fetchone()[0]}", reply_markup=ReplyKeyboardRemove())
+                                                  ~~~~~~~~~~~~~^^^
+TypeError: 'NoneType' object is not subscriptable
+2023-07-02 19:07:51,555 INFO Update id=827702569 is handled. Duration 187 ms by bot id=6192954815
+2023-07-02 19:08:02,020 INFO Add values in users_list by ahramcov2022
+2023-07-02 19:08:02,020 INFO Start bot at user ahramcov2022
+2023-07-02 19:08:02,189 INFO Update id=827702570 is handled. Duration 172 ms by bot id=6192954815
+2023-07-02 19:08:05,001 INFO User ahramcov2022 requested balance
+2023-07-02 19:08:05,001 INFO Update id=827702571 is handled. Duration 171 ms by bot id=6192954815
+2023-07-02 19:08:07,922 INFO Update id=827702572 is handled. Duration 172 ms by bot id=6192954815
+2023-07-02 19:08:20,986 INFO Update id=827702573 is handled. Duration 155 ms by bot id=6192954815
+2023-07-02 19:08:22,960 INFO Get payment at user ahramcov2022 - 500
+2023-07-02 19:08:23,087 INFO Update id=827702574 is handled. Duration 250 ms by bot id=6192954815
+2023-07-02 19:08:25,565 INFO Update id=827702575 is handled. Duration 217 ms by bot id=6192954815
+2023-07-02 19:08:26,609 INFO User ahramcov2022 requested balance
+2023-07-02 19:08:26,609 INFO Update id=827702576 is handled. Duration 204 ms by bot id=6192954815
+2023-07-02 19:08:34,717 INFO Update id=827702577 is handled. Duration 172 ms by bot id=6192954815
+2023-07-02 19:08:35,797 INFO Update id=827702578 is handled. Duration 77 ms by bot id=6192954815
+2023-07-02 19:08:48,459 INFO Check ahramcov2018@yandex.ru at user ahramcov2022
+2023-07-02 19:08:48,459 INFO Update id=827702579 is handled. Duration 469 ms by bot id=6192954815
+2023-07-02 20:39:52,920 INFO Polling stopped
