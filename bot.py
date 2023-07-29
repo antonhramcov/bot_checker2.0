@@ -6,7 +6,7 @@ from aiogram.fsm.state import default_state
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery,
                            Message, LabeledPrice, PreCheckoutQuery, successful_payment, BotCommand)
-from config_data.config import bot_token, payments_token, admin1
+from config_data.config import bot_token, payments_token, admin1, admin2
 import texts, logging
 from external_service.private_api import check
 from external_service.json_to_string import convert, convert_for_bitch
@@ -15,7 +15,7 @@ import sqlite3 as sql
 # Инициализируем хранилище (создаем экземпляр класса MemoryStorage)
 storage: MemoryStorage = MemoryStorage()
 
-admins = [admin1]
+admins = [admin1, admin2]
 
 # Создаем объекты бота и диспетчера
 bot: Bot = Bot(bot_token)
@@ -85,7 +85,8 @@ async def command_start(message: Message, state: State):
         logging.info(f'Add values in users_list by {message.from_user.username}')
     logging.info(f'Start bot at user {message.from_user.username}')
     await message.answer(text=texts.text1_rus)
-    await bot.send_message(chat_id=admins[0], text=f'<b>Пользователь @{message.from_user.username} запустил бота</b>', parse_mode='HTML')
+    for i in range(len(admins)):
+        await bot.send_message(chat_id=admins[i], text=f'<b>Пользователь @{message.from_user.username} (id={message.from_user.id}) запустил бота</b>', parse_mode='HTML')
 
 @dp.message(Text(text='/about'))
 async def command_about(message: Message, state: State):
